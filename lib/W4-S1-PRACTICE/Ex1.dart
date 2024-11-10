@@ -27,7 +27,7 @@ class HobbyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Card(
-        margin: EdgeInsets.only(bottom: 10, left: 40, right: 40),
+        margin: const EdgeInsets.only(bottom: 10, left: 40, right: 40),
         color: Colors.green,
         child: Padding(
           padding: EdgeInsets.all(25.0),

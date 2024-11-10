@@ -14,8 +14,8 @@ void main() {
               borderRadius: BorderRadius.circular(20.0),
             ),
             
-            child: Center(
-              child: Text(
+            child:Center(
+              child:Text(
                 "CADT STUDENTS",
                 style: TextStyle(
                   color: Colors.white,
