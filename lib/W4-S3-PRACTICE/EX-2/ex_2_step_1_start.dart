@@ -18,8 +18,8 @@
       ));
 
   class FavouriteCard extends StatefulWidget {
-    const FavouriteCard({super.key,required this.isFavourite});
     final bool isFavourite;
+    const FavouriteCard({super.key,required this.isFavourite});
     @override
     State<FavouriteCard> createState() => _FavouriteCardState();
   }
@@ -27,14 +27,9 @@
   class _FavouriteCardState extends State<FavouriteCard> {
   
     Color get buttonColor => isFavourite?Colors.red:Colors.grey;
-    late bool isFavourite;
+     bool isFavourite=false;
 
-    @override
-  void initState() {
-    super.initState();
-    isFavourite = widget.isFavourite;
-  }
-
+    
 
 
     void toggle(){
