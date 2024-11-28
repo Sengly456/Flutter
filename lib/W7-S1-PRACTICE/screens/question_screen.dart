@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:my_app/W7-S1-PRACTICE/model/quiz.dart';
 
 
+
 class QuestionScreen extends StatelessWidget {
   const QuestionScreen(
       {super.key, required this.question, required this.onTap});
   final Question question;
-  final VoidCallback onTap;
+  final Function(String) onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,7 @@ class QuestionScreen extends StatelessWidget {
         ),
         for (int i = 0; i < question.possibleAnswers.length; i++)
           TextButton(
-            onPressed: onTap,
+            onPressed: () => onTap(question.possibleAnswers[i]),
             child: Container(
               width: 300,
               margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),

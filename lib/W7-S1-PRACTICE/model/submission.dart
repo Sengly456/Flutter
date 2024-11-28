@@ -2,19 +2,13 @@ import 'package:my_app/W7-S1-PRACTICE/model/quiz.dart';
 
 class Submission {
   final List<Answer> answers;
-  final Question question;
 
   const Submission({
     required this.answers,
-    required this.question,
   });
 
   void addAnswer(Question question, Answer questionAnswer) {
-    if (question == null) {
-      print("No question found");
-    } else {
-      answers.add(questionAnswer);
-    }
+    answers.add(questionAnswer);
   }
 
   void removeAnswers() {
@@ -23,9 +17,12 @@ class Submission {
 
   int getScore() {
     int score = 0;
-    answers.forEach((answer) {
-      answer.isCorrect() ? score++ : score--;
-    });
+    for (var answer in answers) {
+      if (answer.isCorrect()) {
+        score++;
+      }
+    }
+    ;
     return score;
   }
 

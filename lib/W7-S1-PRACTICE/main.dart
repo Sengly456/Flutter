@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/W7-S1-PRACTICE/model/submission.dart';
+
 import 'quiz_app.dart';
 import 'model/quiz.dart';
 
@@ -15,6 +17,6 @@ void main() {
 
   List<Question> myQuestions = [q1, q2];
   Quiz myQuiz = Quiz(title: "Crazy Quizz", questions: myQuestions);
-
-  runApp(QuizApp(myQuiz));
+  Submission mySubmission = Submission(answers: []);
+  runApp(QuizApp(myQuiz,mySubmission));
 }
