@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:my_app/W7-S1-PRACTICE/model/submission.dart';
 import 'package:my_app/W7-S1-PRACTICE/model/quiz.dart';
 
-
 class ResultScreen extends StatelessWidget {
   const ResultScreen({super.key, required this.submission, required this.quiz});
   final Submission submission;
@@ -10,16 +9,16 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-    
-      mainAxisAlignment: MainAxisAlignment.center,
+    return ListView(
       children: [
-        Text(
-          "You got ${submission.getScore()} out of ${submission.answers.length}",
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+        Center(
+          child: Text(
+            "You got ${submission.getScore()} out of ${submission.answers.length}",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         const SizedBox(height: 20),
@@ -30,12 +29,14 @@ class ResultScreen extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                question.title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              Center(
+                child: Text(
+                  question.title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -52,13 +53,12 @@ class ResultScreen extends StatelessWidget {
                       answer,
                       style: TextStyle(
                         color: isUserAnswer ? Colors.yellow : Colors.black,
-                        
                       ),
                     ),
                     // Display a tick icon for the correct answer
                     if (isCorrect)
                       const Icon(
-                        Icons.check,  // The tick icon
+                        Icons.check,  
                         color: Colors.green,
                         size: 18,
                       ),
