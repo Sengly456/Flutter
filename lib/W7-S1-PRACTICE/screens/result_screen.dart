@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/W7-S1-PRACTICE/model/submission.dart';
 import 'package:my_app/W7-S1-PRACTICE/model/quiz.dart';
-import 'package:my_app/W8-S1/models/expense.dart';
+
 
 class ResultScreen extends StatelessWidget {
   const ResultScreen({super.key, required this.submission, required this.quiz});
