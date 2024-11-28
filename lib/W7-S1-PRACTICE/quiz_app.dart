@@ -45,6 +45,14 @@ class _QuizAppState extends State<QuizApp> {
       }
     });
   }
+  void restart() {
+  setState(() {
+    widget.submission.removeAnswers(); // Clear all answers
+    counter = 0; // Reset the question index
+    quizState = QuizState.notStarted; // Return to the Welcome Screen
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +66,7 @@ class _QuizAppState extends State<QuizApp> {
         onTap: nextQuestion,
       );
     } else {
-      currentScreen = ResultScreen(submission:widget.submission,quiz:widget.quiz);
+      currentScreen = ResultScreen(submission:widget.submission,quiz:widget.quiz ,restartToggle:restart);
     }
 
     return MaterialApp(

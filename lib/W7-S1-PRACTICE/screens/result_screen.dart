@@ -3,9 +3,10 @@ import 'package:my_app/W7-S1-PRACTICE/model/submission.dart';
 import 'package:my_app/W7-S1-PRACTICE/model/quiz.dart';
 
 class ResultScreen extends StatelessWidget {
-  const ResultScreen({super.key, required this.submission, required this.quiz});
+  const ResultScreen({super.key, required this.submission, required this.quiz,required this.restartToggle});
   final Submission submission;
   final Quiz quiz;
+  final VoidCallback restartToggle;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +59,7 @@ class ResultScreen extends StatelessWidget {
                     // Display a tick icon for the correct answer
                     if (isCorrect)
                       const Icon(
-                        Icons.check,  
+                        Icons.check,
                         color: Colors.green,
                         size: 18,
                       ),
@@ -69,6 +70,25 @@ class ResultScreen extends StatelessWidget {
             ],
           );
         }),
+        SizedBox(
+          width: 300, // Set desired width
+          child: Center(
+            // Ensure the button is centered
+            child: TextButton(
+              onPressed: () => {restartToggle()},
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.white),
+              ),
+              child: const Text(
+                "Restart",
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 25,
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

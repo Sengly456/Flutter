@@ -14,8 +14,30 @@ void main() {
       title: "Which color is the best?",
       possibleAnswers: ["blue", "red", 'green'],
       goodAnswer: 'red');
+  Question q3 = const Question(
+      title: "What is 1+1?",
+      possibleAnswers: ["two", "five", 'eight'],
+      goodAnswer: 'two');
+  Question q4 = const Question(
+      title: "what does elon must make?",
+      possibleAnswers: ["spaceship", "candy", 'alcohol'],
+      goodAnswer: 'spaceship');
+  Question q5 = const Question(
+      title: "what is the color of orange?",
+      possibleAnswers: ["orange", "blue", 'yellow'],
+      goodAnswer: 'orange');
+  Question q6 = const Question(
+      title: "what animal climb tree?",
+      possibleAnswers: ["monkey", "dog", 'fish'],
+      goodAnswer: 'monkey');
+  Question q7 = const Question(
+      title: "what food that represent korea?",
+      possibleAnswers: ["kimchi", "noodle", 'dumpling'],
+      goodAnswer: 'kimchi');
+  
+  
 
-  List<Question> myQuestions = [q1, q2];
+  List<Question> myQuestions = [q1, q2,q3,q4,q5,q6,q7];
   Quiz myQuiz = Quiz(title: "Crazy Quizz", questions: myQuestions);
   Submission mySubmission = Submission(answers: []);
   runApp(QuizApp(myQuiz,mySubmission));
