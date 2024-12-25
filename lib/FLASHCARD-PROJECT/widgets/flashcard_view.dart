@@ -1,28 +1,25 @@
-import 'dart:math' as math;
+import 'dart:math' show pi;
 import 'package:flutter/material.dart';
 
 class FlashcardView extends StatefulWidget {
   final String question;
   final String answer;
-  final bool showAnswer;
-  final VoidCallback onFlip;
 
   const FlashcardView({
     Key? key,
     required this.question,
     required this.answer,
-    required this.showAnswer,
-    required this.onFlip,
   }) : super(key: key);
 
   @override
   State<FlashcardView> createState() => _FlashcardViewState();
 }
 
-class _FlashcardViewState extends State<FlashcardView> with SingleTickerProviderStateMixin {
+class _FlashcardViewState extends State<FlashcardView>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _animation;
-  bool _showFront = true;
+  late Animation<double> _flipAnimation;
+  bool _showAnswer = false;
 
   @override
   void initState() {
@@ -32,26 +29,19 @@ class _FlashcardViewState extends State<FlashcardView> with SingleTickerProvider
       vsync: this,
     );
 
-    _animation = TweenSequence<double>([
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 0.0, end: -math.pi / 2)
-            .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 50,
-      ),
-      TweenSequenceItem(
-        tween: Tween<double>(begin: math.pi / 2, end: 0.0)
-            .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 50,
-      ),
-    ]).animate(_controller);
+    _flipAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
 
-    _animation.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        _controller.reset();
-        setState(() {
-          _showFront = !_showFront;
-        });
-      }
+  void _flipCard() {
+    if (_showAnswer) {
+      _controller.reverse();
+    } else {
+      _controller.forward();
+    }
+    setState(() {
+      _showAnswer = !_showAnswer;
     });
   }
 
@@ -61,59 +51,63 @@ class _FlashcardViewState extends State<FlashcardView> with SingleTickerProvider
     super.dispose();
   }
 
-  void _flip() {
-    if (_controller.isAnimating) return;
-    widget.onFlip();
-    _controller.forward();
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: _flip,
+      onTap: _flipCard,
       child: AnimatedBuilder(
-        animation: _animation,
+        animation: _flipAnimation,
         builder: (context, child) {
-          final transform = Matrix4.identity()
-            ..setEntry(3, 2, 0.001)
-            ..rotateY(_animation.value);
-          
+          final isFrontVisible = _flipAnimation.value <= 0.5;
+          final rotationAngle = _flipAnimation.value * pi;
+
           return Transform(
-            transform: transform,
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, 0.001) // Perspective effect
+              ..rotateY(rotationAngle),
             alignment: Alignment.center,
-            child: Card(
-              elevation: 8,
-              margin: const EdgeInsets.all(16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                width: double.infinity,
-                height: 250,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: _showFront 
-                      ? [Colors.blue.shade50, Colors.blue.shade100]
-                      : [Colors.green.shade50, Colors.green.shade100],
+            child: isFrontVisible
+                ? _buildCard(
+                    widget.question, Colors.white, Colors.blue.shade100)
+                : Transform(
+                    transform: Matrix4.rotationY(pi),
+                    alignment: Alignment.center,
+                    child: _buildCard(
+                        widget.answer, Colors.white, Colors.green.shade100),
                   ),
-                ),
-                child: Text(
-                  _showFront ? widget.question : widget.answer,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.black87,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildCard(String text, Color cardColor, Color gradientColor) {
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Container(
+        width: double.infinity,
+        height: 200,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [cardColor, gradientColor],
+          ),
+        ),
+        padding: const EdgeInsets.all(24),
+        alignment: Alignment.center,
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }

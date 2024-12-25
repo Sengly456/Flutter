@@ -1,108 +1,150 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/FLASHCARD-PROJECT/widgets/flashcard_view.dart';
+import 'card_review_screen.dart';
 
-
-class CardReviewScreen extends StatefulWidget {
+class DeckScreen extends StatefulWidget {
+  final String deckTitle;
   final List<Map<String, String>> cards;
+  final Function(List<Map<String, String>>) onDeckUpdated;
 
-  const CardReviewScreen({
+  const DeckScreen({
     Key? key,
+    required this.deckTitle,
     required this.cards,
+    required this.onDeckUpdated,
   }) : super(key: key);
 
   @override
-  _CardReviewScreenState createState() => _CardReviewScreenState();
+  State<DeckScreen> createState() => _DeckScreenState();
 }
 
-class _CardReviewScreenState extends State<CardReviewScreen> {
-  int _currentIndex = 0;
-  bool _showAnswer = false;
+class _DeckScreenState extends State<DeckScreen> {
+  late List<Map<String, String>> cards;
 
-  void _nextCard() {
-    if (_currentIndex < widget.cards.length - 1) {
-      setState(() {
-        _currentIndex++;
-        _showAnswer = false;
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
+    cards = List<Map<String, String>>.from(widget.cards);
   }
 
-  void _previousCard() {
-    if (_currentIndex > 0) {
-      setState(() {
-        _currentIndex--;
-        _showAnswer = false;
-      });
-    }
+  void _navigateToCardReview(BuildContext context, int index) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CardReviewScreen(
+          cards: cards,
+          initialCardIndex: index,
+        ),
+      ),
+    );
+  }
+
+  void _showAddCardDialog(BuildContext context) {
+    final questionController = TextEditingController();
+    final answerController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Add New Card'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: questionController,
+              decoration: InputDecoration(
+                labelText: 'Question',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: answerController,
+              decoration: InputDecoration(
+                labelText: 'Answer',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final question = questionController.text.trim();
+              final answer = answerController.text.trim();
+              if (question.isNotEmpty && answer.isNotEmpty) {
+                setState(() {
+                  cards.add({'question': question, 'answer': answer});
+                });
+                widget.onDeckUpdated(cards); // Notify HomeScreen about the update
+                Navigator.pop(context); // Close dialog
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Please enter both question and answer!')),
+                );
+              }
+            },
+            child: Text('Add'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.cards.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(title: Text('Card Review')),
-        body: Center(child: Text('No cards available')),
-      );
-    }
-
-    final currentCard = widget.cards[_currentIndex];
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Card Review'),
+        title: Text(widget.deckTitle),
         centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Card counter
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Text(
-                'Card ${_currentIndex + 1} of ${widget.cards.length}',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+            Text(
+              'Cards in ${widget.deckTitle}',
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
-            
-            // Flashcard
+            SizedBox(height: 16),
             Expanded(
-              child: FlashcardView(
-                question: currentCard['question'] ?? 'No question available',
-                answer: currentCard['answer'] ?? 'No answer available',
-                showAnswer: _showAnswer,
-                onFlip: () {
-                  setState(() {
-                    _showAnswer = !_showAnswer;
-                  });
-                },
-              ),
+              child: cards.isNotEmpty
+                  ? ListView.builder(
+                      itemCount: cards.length,
+                      itemBuilder: (context, index) {
+                        final card = cards[index];
+                        return Card(
+                          margin: EdgeInsets.symmetric(vertical: 8),
+                          child: ListTile(
+                            leading: Icon(Icons.note, color: Colors.orange),
+                            title: Text(card['question'] ?? 'No Question'),
+                            subtitle: Text('Tap to review'),
+                            onTap: () => _navigateToCardReview(context, index),
+                            trailing: Icon(Icons.arrow_forward),
+                          ),
+                        );
+                      },
+                    )
+                  : Center(
+                      child: Text(
+                        'No cards available. Add some!',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
             ),
-
-            // Navigation buttons
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: _currentIndex > 0 ? _previousCard : null,
-                    icon: Icon(Icons.arrow_back),
-                    label: Text('Previous'),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: _currentIndex < widget.cards.length - 1 ? _nextCard : null,
-                    icon: Icon(Icons.arrow_forward),
-                    label: Text('Next'),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    ),
-                  ),
-                ],
+            SizedBox(height: 16),
+            Center(
+              child: ElevatedButton.icon(
+                onPressed: () => _showAddCardDialog(context),
+                icon: Icon(Icons.add),
+                label: Text('Add New Card'),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
               ),
             ),
           ],

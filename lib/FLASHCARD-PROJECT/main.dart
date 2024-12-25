@@ -3,10 +3,12 @@ import 'screens/home_screen.dart';
 import 'screens/deck_screen.dart';
 
 void main() {
-  runApp(FlashcardApp());
+  runApp(const FlashcardApp());
 }
 
 class FlashcardApp extends StatelessWidget {
+  const FlashcardApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,17 +18,15 @@ class FlashcardApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => HomeScreen(),
-      },
+      home:  HomeScreen(),
       onGenerateRoute: (settings) {
         if (settings.name == '/deck') {
           final args = settings.arguments as Map<String, dynamic>;
           return MaterialPageRoute(
             builder: (context) => DeckScreen(
-              deckTitle: args['deckTitle'],
-              cards: args['cards'],
+              deckTitle: args['title'] as String,
+              cards: List<Map<String, String>>.from(args['cards'] as List),
+              onDeckUpdated: args['onDeckUpdated'] as Function(List<Map<String, String>>),
             ),
           );
         }

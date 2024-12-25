@@ -11,13 +11,7 @@ class Deck {
     this.cards = const [],
   });
 
-  void addCard(Flashcard card) {
-    cards.add(card);
-  }
-
-  void removeCard(Flashcard card) {
-    cards.remove(card);
-  }
+  
 }
 
 
